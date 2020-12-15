@@ -134,8 +134,6 @@ const byte rows[8] = {
   B01111111,
 };
 
-const byte *S = charMap[text[0] - 32];
-
 void setup() {
   //set pins to output because they are addressed in the main loop
   pinMode(latchPin, OUTPUT);
