@@ -11,13 +11,13 @@ NPN transistors connected to second shift register (defines the row)
 
 */
 
-const byte millisPerFrame = 100;
+const int millisPerFrame = 100;
 
 const byte latchPin = 12;  // ST_CP
 const byte clockPin = 11;  // SH_CP
 const byte dataPin = 10;  // DS
 
-char text[] = "abcdefg";
+char text[] = "aaaaaaa";
 
 byte charMap[][8] = {
   {B00000000, B00000000, B00000000, B00000000, B00000000, B00000000, B00000000, B00000000},  // space
@@ -80,7 +80,7 @@ byte charMap[][8] = {
   {B10001000, B10001000, B10001000, B01010000, B00100000, B00100000, B00100000, B00000000},  // Y
   {B11110000, B00010000, B00010000, B00100000, B01000000, B10000000, B11110000, B00000000},  // Z
   {B11000000, B10000000, B10000000, B10000000, B10000000, B10000000, B11000000, B00000000},  // [
-  {B10000000, B01000000, B01000000, B00100000, B00100000, B00010000, B00010000, B00000000},  // \
+  {B10000000, B01000000, B01000000, B00100000, B00100000, B00010000, B00010000, B00000000},  // backslash
   {B11000000, B01000000, B01000000, B01000000, B01000000, B01000000, B11000000, B00000000},  // ]
   {B01000000, B10100000, B00000000, B00000000, B00000000, B00000000, B00000000, B00000000},  // ^
   {B00000000, B00000000, B00000000, B00000000, B00000000, B00000000, B11110000, B00000000},  // _
@@ -149,8 +149,8 @@ void loop() {
       nextLetter = ' ';
     }
     
-    int charMapPos = letter - 33;
-    int nextCharMapPos = nextLetter - 33;
+    int charMapPos = letter - 32;
+    int nextCharMapPos = nextLetter - 32;
     
     byte *letterBytes = charMap[charMapPos];
     byte *nextLetterBytes = charMap[nextCharMapPos];
