@@ -17,7 +17,7 @@ const byte latchPin = 12;  // ST_CP
 const byte clockPin = 11;  // SH_CP
 const byte dataPin = 10;  // DS
 
-char text[] = "aaaaaaa";
+char text[] = "abcdefg";
 
 byte charMap[][8] = {
   {B00000000, B00000000, B00000000, B00000000, B00000000, B00000000, B00000000, B00000000},  // space
@@ -168,10 +168,10 @@ void loop() {
 
 byte combineLetters(byte firstLetter, byte secondLetter, byte frameNum){
   double multiplier = pow(2, (8 - frameNum));
-  double first = firstLetter - floor(firstLetter / multiplier) * multiplier;
-  double second = floor(secondLetter / multiplier);
-  byte result = first * pow(2, frameNum) + second;
-  return result;
+  int first = firstLetter - floor(firstLetter / multiplier) * multiplier;
+  int second = floor(secondLetter / multiplier);
+  double result = first * pow(2, frameNum) + second;
+  return (byte) ceil(result);
 }
   
 void displayLetter(byte letter[]){
