@@ -6,19 +6,16 @@ Data goes to PNP shift register first, then NPN shift register
 Therefore, first transmitted byte gets shifted to the NPN shift register
 and second byte will remain in the PNP shift register
 
-PNP transistors connected to first shift register
-NPN transistors connected to second shift register
+PNP transistors connected to first shift register (defines the column)
+NPN transistors connected to second shift register (defines the row)
 
-PNP transistors (first shift register) defines the column
-NPN transistors (second shift register) defines the row
+*/
 
- */
+const byte millisPerFrame = 100;
 
-const int millisPerFrame = 100;
-
-const int latchPin = 12;  // ST_CP
-const int clockPin = 11;  // SH_CP
-const int dataPin = 10;  // DS
+const byte latchPin = 12;  // ST_CP
+const byte clockPin = 11;  // SH_CP
+const byte dataPin = 10;  // DS
 
 char text[] = "abcdefg";
 
@@ -138,14 +135,14 @@ void setup() {
 }
 
 void loop() {
-  int numCharsInText = sizeof(text) - 1;
-  for(int letterPos=0; letterPos < numCharsInText; letterPos++) {
+  int numLettersInText = sizeof(text) - 1;
+  for(int letterPos=0; letterPos < numLettersInText; letterPos++) {
     int nextLetterPos = letterPos + 1;
     
     char letter = text[letterPos];
     char nextLetter;
-    
-    if(nextLetterPos < numCharsInText) {
+
+    if(nextLetterPos < numLettersInText) {
       nextLetter = text[nextLetterPos];
     }
     else{
@@ -158,75 +155,23 @@ void loop() {
     byte *letterBytes = charMap[charMapPos];
     byte *nextLetterBytes = charMap[nextCharMapPos];
     
-    for(int n = 0; n < 8; n++) {
+    for(byte frameNum = 0; frameNum < 8; frameNum++) {
 
-      byte baseVal = 2;
-      byte lengthVal = 8;
-
-      double a0 = (double) letterBytes[0];
-      double a1 = (double) letterBytes[1];
-      double a2 = (double) letterBytes[2];
-      double a3 = (double) letterBytes[3];
-      double a4 = (double) letterBytes[4];
-      double a5 = (double) letterBytes[5];
-      double a6 = (double) letterBytes[6];
-      double a7 = (double) letterBytes[7];
-
-      double b0 = (double) nextLetterBytes[0];
-      double b1 = (double) nextLetterBytes[1];
-      double b2 = (double) nextLetterBytes[2];
-      double b3 = (double) nextLetterBytes[3];
-      double b4 = (double) nextLetterBytes[4];
-      double b5 = (double) nextLetterBytes[5];
-      double b6 = (double) nextLetterBytes[6];
-      double b7 = (double) nextLetterBytes[7];
-
-      double len = 8;
-      double base = 2;
-      double m = pow(base, (len - n));
-
-      double first0 = a0 - floor(a0 / m) * m;
-      double first1 = a1 - floor(a1 / m) * m;
-      double first2 = a2 - floor(a2 / m) * m;
-      double first3 = a3 - floor(a3 / m) * m;
-      double first4 = a4 - floor(a4 / m) * m;
-      double first5 = a5 - floor(a5 / m) * m;
-      double first6 = a6 - floor(a6 / m) * m;
-      double first7 = a7 - floor(a7 / m) * m;
-
-      double second0 = floor(b0 / m);
-      double second1 = floor(b1 / m);
-      double second2 = floor(b2 / m);
-      double second3 = floor(b3 / m);
-      double second4 = floor(b4 / m);
-      double second5 = floor(b5 / m);
-      double second6 = floor(b6 / m);
-      double second7 = floor(b7 / m);
-
-
-      double result0 = first0 * pow(base, n) + second0;
-      double result1 = first1 * pow(base, n) + second1;
-      double result2 = first2 * pow(base, n) + second2;
-      double result3 = first3 * pow(base, n) + second3;
-      double result4 = first4 * pow(base, n) + second4;
-      double result5 = first5 * pow(base, n) + second5;
-      double result6 = first6 * pow(base, n) + second6;
-      double result7 = first7 * pow(base, n) + second7;
-      
-      byte visibleFrame[] = {
-        (byte) result0,
-        (byte) result1,
-        (byte) result2,
-        (byte) result3,
-        (byte) result4,
-        (byte) result5,
-        (byte) result6,
-        (byte) result7,
-      };
-
+      byte visibleFrame[8];
+      for(byte row = 0; row < 8; row++) {
+        visibleFrame[row] = combineLetters(letterBytes[row], nextLetterBytes[row], frameNum);
+      }
       displayLetter(visibleFrame);
     }
   }
+}
+
+byte combineLetters(byte firstLetter, byte secondLetter, byte frameNum){
+  double multiplier = pow(2, (8 - frameNum));
+  double first = firstLetter - floor(firstLetter / multiplier) * multiplier;
+  double second = floor(secondLetter / multiplier);
+  byte result = first * pow(2, frameNum) + second;
+  return result;
 }
   
 void displayLetter(byte letter[]){
