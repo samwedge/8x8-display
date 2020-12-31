@@ -14,7 +14,7 @@ NPN transistors (second shift register) defines the row
 
  */
 
-const int cycles_per_letter = 80;  // FIXME: Convert to millis/frame once scrolling is enabled
+const int millisPerFrame = 100;
 
 const int latchPin = 12;  // ST_CP
 const int clockPin = 11;  // SH_CP
@@ -230,7 +230,9 @@ void loop() {
 }
   
 void displayLetter(byte letter[]){
-  for(int cycle=0; cycle<cycles_per_letter; cycle++){
+
+  unsigned long t0 = millis();
+  while(millis() < (t0 + millisPerFrame)){
     for(byte rowNum=0; rowNum<8; rowNum++){
       digitalWrite(latchPin, LOW);
       shiftOut(dataPin, clockPin, MSBFIRST, letter[rowNum]);
