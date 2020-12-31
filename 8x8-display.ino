@@ -158,7 +158,7 @@ void loop() {
     byte *letterBytes = charMap[charMapPos];
     byte *nextLetterBytes = charMap[nextCharMapPos];
     
-    for(int n = 0; n <= 8; n++) {
+    for(int n = 0; n < 8; n++) {
 
       byte baseVal = 2;
       byte lengthVal = 8;
